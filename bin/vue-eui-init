@@ -6,6 +6,7 @@ const program = require('commander')
 const chalk = require('chalk')
 const inquirer = require('inquirer')
 const home = require('user-home')
+const rm = require('rimraf').sync
 const QueueCmd = require('node.cmd').QueueCmd
 
 const dirTemplates = path.join(home, '.vue-eui-template')
@@ -88,16 +89,15 @@ const run = function() {
   }
 }
 
-if (!exists(dirTemplates)) {
-  const cwd = process.cwd()
-  mkdir(dirTemplates)
-  const ins = new QueueCmd()
-  ins.queue(`git clone ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-template.git ${dirTemplates}`, function(
-    data
-  ) {
-    console.log(data)
-    run()
-  })
+if (exists(dirTemplates)) {
+  rm(dirTemplates)
 } else {
-  run()
+  mkdir(dirTemplates)
 }
+const ins = new QueueCmd()
+ins.queue(`git clone ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-template.git ${dirTemplates}`, function(
+  data
+) {
+  console.log(data)
+  run()
+})
