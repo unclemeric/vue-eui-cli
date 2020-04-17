@@ -11,30 +11,41 @@ const QueueCmd = require('node.cmd').QueueCmd
 
 const dirTemplates = path.join(home, '.vue-eui-template')
 
-program.usage('[project name]').option('-c, --cache', 'use cached template')
-program.on('--help', () => {
-  console.log(' Examples:')
-  console.log()
-  console.log(chalk.gray('    # create a project in current dir:'))
-  console.log('   $ vue-eui init')
-  console.log()
-  console.log('   $ vue-eui init my-project')
-  console.log()
+// program.command('init [option] <project-name>').description('generate a new project from a template')
+// program
+//   .usage('[option][project name]')
+//   // .option('-c, --cache', 'use cached template')
+//   .option('-auth', 'create auth template')
+// program.on('--help', () => {
+//   console.log(' Examples:')
+//   console.log(chalk.gray('    # create a project in current dir:'))
+//   // console.log('   $ vue-eui init [option] \t\t\t 在当前目录创建模板')
+//   console.log('   $ vue-eui init [option] my-project \t\t 创建一个普通模板')
+//   console.log('   $ vue-eui init [option] my-project -auth \t 创建一个带权限模板')
+// })
+const config = {}
+const commands = process.argv.slice(3)
+commands.forEach(item => {
+  switch (item) {
+    case '-auth':
+      config.auth = true
+      break
+  }
 })
 program.parse(process.argv)
-const rawName = program.args[0]
+const rawName = commands[commands.length - 1]
 // const dirTemplates = program.args[1]
 
 const isCurrentDir = !rawName || rawName === '.' || rawName === './'
 const projectName = isCurrentDir ? path.relative('../', process.cwd()) : rawName
 const to = path.resolve(projectName || '.')
-
 const copyTemplate = function(from, to) {
   write(to, fs.readFileSync(path.resolve(from), 'utf-8'))
 }
 
 const write = function(path, str) {
-  str = str.replace(/element-ui-admin-template/g, rawName)
+  str = str.replace(/element-ui-admin-template/g, projectName)
+  str = str.replace(/element-ui-admin-auth-template/g, projectName)
   fs.writeFileSync(path, str)
 }
 
@@ -95,9 +106,14 @@ if (exists(dirTemplates)) {
   mkdir(dirTemplates)
 }
 const ins = new QueueCmd()
-ins.queue(`git clone ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-template.git ${dirTemplates}`, function(
-  data
-) {
-  console.log(data)
-  run()
-})
+ins.queue(
+  `git clone ${
+    config.auth
+      ? 'ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-auth-template.git'
+      : 'ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-template.git'
+  } ${dirTemplates}`,
+  function(data) {
+    console.log(data)
+    run()
+  }
+)
