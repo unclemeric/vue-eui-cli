@@ -11,31 +11,22 @@ const QueueCmd = require('node.cmd').QueueCmd
 
 const dirTemplates = path.join(home, '.vue-eui-template')
 
-// program.command('init [option] <project-name>').description('generate a new project from a template')
-// program
-//   .usage('[option][project name]')
-//   // .option('-c, --cache', 'use cached template')
-//   .option('-auth', 'create auth template')
-// program.on('--help', () => {
-//   console.log(' Examples:')
-//   console.log(chalk.gray('    # create a project in current dir:'))
-//   // console.log('   $ vue-eui init [option] \t\t\t 在当前目录创建模板')
-//   console.log('   $ vue-eui init [option] my-project \t\t 创建一个普通模板')
-//   console.log('   $ vue-eui init [option] my-project -auth \t 创建一个带权限模板')
-// })
+program
+  .usage('<command> [options]')
+  .option('-a, --auth', 'create auth template')
+  .parse(process.argv)
+
 const config = {}
-const commands = process.argv.slice(3)
-commands.forEach(item => {
+process.argv.slice(2).forEach((item, i) => {
   switch (item) {
-    case '-auth':
+    case '-a':
+    case '--auth':
       config.auth = true
       break
   }
 })
 program.parse(process.argv)
-const rawName = commands[commands.length - 1]
-// const dirTemplates = program.args[1]
-
+const rawName = program.args[0]
 const isCurrentDir = !rawName || rawName === '.' || rawName === './'
 const projectName = isCurrentDir ? path.relative('../', process.cwd()) : rawName
 const to = path.resolve(projectName || '.')
@@ -113,7 +104,6 @@ ins.queue(
       : 'ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-template.git'
   } ${dirTemplates}`,
   function(data) {
-    console.log(data)
     run()
   }
 )
