@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "vue-eui": "bin/vue-eui"
+    "vue-eui": "./bin/vue-eui"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
