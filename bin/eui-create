@@ -56,8 +56,8 @@ const ins = new QueueCmd()
 ins.queue(
   `git clone ${
     options.auth
-      ? 'ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-auth-template.git'
-      : 'ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-template.git'
+      ? 'http://10.0.82.113/hwagain-FE/element-ui-admin-auth-template.git'
+      : 'http://10.0.82.113/hwagain-FE/element-ui-admin-template.git'
   } ${dirTemplates}`,
   function (data) {
     createProject(options.args ? options.args[0] : '')
