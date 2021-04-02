@@ -1,0 +1,65 @@
+#!/usr/bin/env node
+const fs = require('fs')
+const rm = require('rimraf').sync
+const path = require('path')
+const program = require('commander')
+const chalk = require('chalk')
+const home = require('user-home')
+const { getopt } = require('stdio')
+const QueueCmd = require('node.cmd').QueueCmd
+const createProject = require('../lib/create')
+const commonUtil = require('../lib/common')
+const dirTemplates = path.join(home, '.vue-eui-template')
+
+program
+  .version(require('../package').version)
+  .usage('create [options] <app-name>')
+  .option('-a', '创建一个带权限的项目模板')
+  .option('-c', '使用上次使用过的模板(默认拉取最新模板)')
+  .command('create <app-name>', 'create a new project powered by vue-eui-cli')
+  .on('--help', () => {
+    console.log(' Examples:')
+    // console.log('   $ vue-eui create [option] \t\t\t 在当前目录创建模板')
+    console.log(chalk.green('   $ vue-eui create <app-name> \t\t 创建一个普通模板'))
+    console.log(chalk.green('   $ vue-eui create <app-name> -a \t 创建一个带权限模板'))
+    console.log(chalk.green('   $ vue-eui create <app-name> -c \t 使用上次拉取的模板'))
+  })
+  .parse(process.argv)
+
+// var ops = stdio.getopt({
+//   'check': {key: 'c', args: 2, description: 'What this option means'},
+//   'map': {key: 'm', description: 'Another description'},
+//   'kaka': {args: 1, mandatory: true},
+//   'ooo': {key: 'o'}
+// });
+// node <your_script.js> -c 23 45 --map -k 23 file1 file2
+// 输出
+// { check: [ '23', '45' ],
+//   args: [ 'file1', 'file2' ],
+//   map: true,
+//   kaka: '23' }
+
+const options = getopt({
+  auth: { key: 'a', description: '创建一个带权限的项目模板' },
+  useCache: { key: 'c', description: '使用上次使用过的模板' }
+})
+
+if (fs.existsSync(dirTemplates)) {
+  if (!options.useCache) {
+    rm(dirTemplates)
+  }
+} else {
+  commonUtil.mkdir(dirTemplates)
+}
+
+const ins = new QueueCmd()
+ins.queue(
+  `git clone ${
+    options.auth
+      ? 'ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-auth-template.git'
+      : 'ssh://git@10.0.82.224:2222/hwagain-FE/element-ui-admin-template.git'
+  } ${dirTemplates}`,
+  function (data) {
+    createProject(options.args ? options.args[0] : '')
+  }
+)

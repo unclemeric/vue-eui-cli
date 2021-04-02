@@ -1,10 +1,10 @@
 {
   "name": "vue-eui-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "bin": {
-    "vue-eui": "./bin/vue-eui"
+    "eui": "./bin/vue-eui"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,6 +18,7 @@
     "inquirer": "^7.0.5",
     "node.cmd": "^2.0.7",
     "rimraf": "^3.0.2",
+    "stdio": "^2.1.1",
     "user-home": "^2.0.0"
   }
 }
