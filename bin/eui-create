@@ -47,6 +47,9 @@ const options = getopt({
 if (fs.existsSync(dirTemplates)) {
   if (!options.useCache) {
     rm(dirTemplates)
+  } else {
+    createProject(options.args ? options.args[0] : '', dirTemplates)
+    return
   }
 } else {
   commonUtil.mkdir(dirTemplates)
@@ -60,6 +63,6 @@ ins.queue(
       : 'http://10.0.82.113/hwagain-FE/element-ui-admin-template.git'
   } ${dirTemplates}`,
   function (data) {
-    createProject(options.args ? options.args[0] : '')
+    createProject(options.args ? options.args[0] : '', dirTemplates)
   }
 )
