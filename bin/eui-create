@@ -6,10 +6,10 @@ const program = require('commander')
 const chalk = require('chalk')
 const home = require('user-home')
 const { getopt } = require('stdio')
-const QueueCmd = require('node.cmd').QueueCmd
 const createProject = require('../lib/create')
 const commonUtil = require('../lib/common')
 const dirTemplates = path.join(home, '.vue-eui-template')
+const dirAuthTemplates = path.join(home, '.vue-eui-auth-template')
 
 program
   .version(require('../package').version)
@@ -43,26 +43,15 @@ const options = getopt({
   auth: { key: 'a', description: '创建一个带权限的项目模板' },
   useCache: { key: 'c', description: '使用上次使用过的模板' }
 })
-
-if (fs.existsSync(dirTemplates)) {
+let projectName = options.args ? options.args[0] : ''
+let tempPath = options.auth ? dirAuthTemplates : dirTemplates
+if (fs.existsSync(tempPath)) {
   if (!options.useCache) {
-    rm(dirTemplates)
+    rm(tempPath)
+    commonUtil.pullTemplate(projectName, tempPath, options.auth)
   } else {
-    createProject(options.args ? options.args[0] : '', dirTemplates)
-    return
+    createProject(projectName, tempPath)
   }
 } else {
-  commonUtil.mkdir(dirTemplates)
+  commonUtil.mkdir(tempPath)
 }
-
-const ins = new QueueCmd()
-ins.queue(
-  `git clone ${
-    options.auth
-      ? 'http://10.0.82.113/hwagain-FE/element-ui-admin-auth-template.git'
-      : 'http://10.0.82.113/hwagain-FE/element-ui-admin-template.git'
-  } ${dirTemplates}`,
-  function (data) {
-    createProject(options.args ? options.args[0] : '', dirTemplates)
-  }
-)
