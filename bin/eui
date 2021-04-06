@@ -43,7 +43,6 @@ const options = getopt({
   useCache: { key: 'c', description: '使用上次使用过的模板' }
 })
 let projectName = options.args ? options.args[0] : ''
-console.log(projectName, options, process.argv)
 let tempPath = options.auth ? dirAuthTemplates : dirTemplates
 if (fs.existsSync(tempPath)) {
   console.log(chalk.green('模板已存在...'))
