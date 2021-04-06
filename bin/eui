@@ -16,12 +16,14 @@ program
   .usage('[options] <app-name>')
   .option('-a', '创建一个带权限的项目模板')
   .option('-c', '使用上次使用过的模板(默认拉取最新模板)')
+  .option('-z', '项目中文名称')
   // .command('<app-name>', 'create a new project powered by vue-eui-cli')
   .on('--help', () => {
     console.log(' Examples:')
-    console.log(chalk.green('   $ eui <app-name> \t 创建一个普通模板'))
-    console.log(chalk.green('   $ eui <app-name> -a \t 创建一个带权限模板'))
-    console.log(chalk.green('   $ eui <app-name> -c \t 使用上次拉取的模板'))
+    console.log(chalk.green('   $ eui <app-name> \t\t\t\t  创建一个普通模板'))
+    console.log(chalk.green('   $ eui <app-name> -a \t\t\t\t  创建一个带权限模板'))
+    console.log(chalk.green('   $ eui <app-name> -c \t\t\t\t  使用上次拉取的模板'))
+    console.log(chalk.green('   $ eui <app-name> -z 华劲后台管理系统 \t  设置系统中文名称'))
   })
   .parse(process.argv)
 
@@ -40,7 +42,8 @@ program
 
 const options = getopt({
   auth: { key: 'a', description: '创建一个带权限的项目模板' },
-  useCache: { key: 'c', description: '使用上次使用过的模板' }
+  useCache: { key: 'c', description: '使用上次使用过的模板' },
+  cnName: { key: 'z', args: 1, description: '项目中文名称' }
 })
 let projectName = options.args ? options.args[0] : ''
 let tempPath = options.auth ? dirAuthTemplates : dirTemplates
@@ -51,7 +54,7 @@ if (fs.existsSync(tempPath)) {
     rm(tempPath)
     commonUtil.mkdir(tempPath)
     console.log(chalk.green('准备重新下载模板...'))
-    commonUtil.pullTemplate(projectName, tempPath, options.auth)
+    commonUtil.pullTemplate(projectName, tempPath, options)
   } else {
     console.log(chalk.green('正在使用缓存模板创建项目...'))
     createProject(projectName, tempPath)
@@ -59,5 +62,5 @@ if (fs.existsSync(tempPath)) {
 } else {
   console.log(chalk.green('模板不存在,准备拉取git模板...'))
   commonUtil.mkdir(tempPath)
-  commonUtil.pullTemplate(projectName, tempPath, options.auth)
+  commonUtil.pullTemplate(projectName, tempPath, options)
 }
